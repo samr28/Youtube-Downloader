@@ -51,6 +51,6 @@ io.on("connection", function(socket) {
 });
 
 // Listen for connections on WEB_PORT
-http.listen(3000, function() {
-  console.log(`listening on *:${3000}`);
+http.listen(process.env.WEB_PORT, function() {
+  console.log(`listening on *:${process.env.WEB_PORT}`);
 });
