@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Youtube Downloader</title>
+        <!-- Bootstrap core CSS -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Material Design Bootstrap -->
+        <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.4/css/mdb.min.css" rel="stylesheet"> -->
+        <link href="https://mdbootstrap.com/wp-content/themes/mdbootstrap4/css/compiled-4.5.6.min.css?ver=4.5.6" rel="stylesheet">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    </head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        $(function () {
+            var socket = io();
+            toastr.options = {
+                "closeButton": true,
+                "extendedTimeOut": 0,
+                "hideDuration": 300, 
+                "hideEasing": "swing",
+                "hideMethod": "fadeOut",   
+                "timeOut": 5000
+            }
+            socket.on('msg', function (type, msg, title) {
+                toastr[type](msg, title);
+            });
+            $('#submit').click(function() {
+                var link = $("#link").val();
+                socket.emit('submit', link);
+            });
+        });
+    </script>
+    <body>       
+        <div class="container mt-5">
+                <section class="form-gradient">
+                    <!--Form with header-->
+                    <div class="card">
+                        <!--Header-->
+                        <div class="header pt-3 pb-3 blue-gradient">
+                            <div class="row d-flex justify-content-center">
+                                <h3 class="white-text mb-3 pt-3 font-weight-bold">Youtube Downloader</h3>
+                            </div>
+                        </div>
+                        <!--Header-->
+                        <div class="card-body mx-4 mt-4">
+                            <!--Body-->
+                            <div class="md-form">
+                                <i class="fas fa-link prefix"></i>
+                                <input type="text" id="link" class="form-control">
+                                <label for="link">Link</label>
+                            </div>
+                            <!--Grid row-->
+                            <div class="row d-flex align-items-center mb-4">
+                                <!--Grid column-->
+                                <div class="col-md-1 col-md-5 d-flex align-items-start">
+                                    <div class="text-center">
+                                        <button id="submit" class="btn blue-gradient">Download</button>
+                                    </div>
+                                </div>
+                                <!--Grid column-->
+                                <!--Grid column-->
+                            </div>
+                            <!--Grid row-->
+                        </div>
+                    </div>
+                    <!--/Form with header-->
+            </section>
+        </div>
+
+        <!-- <div class="container">
+        <div class="card">
+            <div id="footer" class="card-body">
+            Loading...
+            </div>
+        </div>
+        </div> -->
+        <br>
+    </body>
+    <!-- JQuery -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.4/js/mdb.min.js"></script>
+    <!-- Toast -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+</html>
