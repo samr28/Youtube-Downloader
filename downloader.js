@@ -13,7 +13,6 @@ module.exports = {
         if (err) {
           reject(err);
         } else if (stderr) {
-          console.log(typeof stderr);
           reject(stderr);
         } else {
           resolve(stdout);
