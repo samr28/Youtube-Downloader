@@ -33,13 +33,13 @@ app.use(express.static("css"));
 
 // Update inner html and refresh when buttons are clicked
 io.on("connection", function(socket) {
-  socket.on("submit", function(url) {
-    if (!validator.isURL(url)) {
-      socket.emit("msg", "error", "Invalid url: " + url);
+  socket.on("submit", function(data) {
+    if (!validator.isURL(data.url)) {
+      socket.emit("msg", "error", "Invalid url: " + data.url);
     } else {
       socket.emit("msg", "info", "Download started");
       downloader
-        .download(url)
+        .download(data)
         .then(function(stdout) {
           socket.emit("msg", "success", "Download complete");
         })

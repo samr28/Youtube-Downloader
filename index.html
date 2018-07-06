@@ -27,8 +27,14 @@
                 toastr[type](msg, title);
             });
             $('#submit').click(function() {
-                var link = $("#link").val();
-                socket.emit('submit', link);
+                console.log("test");
+                var data = {};
+                data.title = $("#title").val();
+                data.album = $("#album").val();
+                data.artist = $("#artist").val();
+                data.url = $("#url").val();
+                console.log(data);
+                socket.emit('submit', data);
             });
         });
     </script>
@@ -47,9 +53,24 @@
                         <div class="card-body mx-4 mt-4">
                             <!--Body-->
                             <div class="md-form">
+                                <i class="fas fa-align-left prefix"></i>
+                                <input type="text" id="title" class="form-control">
+                                <label for="title">Title</label>
+                            </div>
+                            <div class="md-form">
+                                <i class="fas fa-compact-disc prefix"></i>
+                                <input type="text" id="album" class="form-control">
+                                <label for="album">Album</label>
+                            </div>
+                            <div class="md-form">
+                                <i class="fas fa-user prefix"></i>
+                                <input type="text" id="artist" class="form-control">
+                                <label for="artist">Artist</label>
+                            </div>
+                            <div class="md-form">
                                 <i class="fas fa-link prefix"></i>
-                                <input type="text" id="link" class="form-control">
-                                <label for="link">Link</label>
+                                <input type="text" id="url" class="form-control">
+                                <label for="url">Link</label>
                             </div>
                             <!--Grid row-->
                             <div class="row d-flex align-items-center mb-4">
