@@ -27,52 +27,70 @@
                 toastr[type](msg, title);
             });
             $('#submit').click(function() {
-                console.log("test");
                 var data = {};
                 data.title = $("#title").val();
                 data.album = $("#album").val();
                 data.artist = $("#artist").val();
                 data.url = $("#url").val();
+                var password = $("#password").val();
                 console.log(data);
-                socket.emit('submit', data);
+                socket.emit('submit', data, password);
             });
         });
     </script>
     <body>       
         <div class="container mt-5">
-                <section class="form-gradient">
-                    <!--Form with header-->
-                    <div class="card">
-                        <!--Header-->
-                        <div class="header pt-3 pb-3 blue-gradient">
-                            <div class="row d-flex justify-content-center">
-                                <h3 class="white-text mb-3 pt-3 font-weight-bold">Youtube Downloader</h3>
+            <section class="form-gradient">
+                <div class="card">
+                    <div class="header pt-3 pb-3 blue-gradient">
+                        <div class="row d-flex justify-content-center">
+                            <h3 class="white-text mb-3 pt-3 font-weight-bold">Youtube Downloader</h3>
+                        </div>
+                    </div>
+                    <div class="card-body mx-4 mt-4">
+                        <div class="form-row">
+                            <div class="col">
+                                <div class="md-form">
+                                    <i class="fas fa-align-left prefix"></i>
+                                    <input type="text" id="title" class="form-control">
+                                    <label for="title">Title</label>
+                                </div>
                             </div>
                         </div>
-                        <!--Header-->
-                        <div class="card-body mx-4 mt-4">
-                            <!--Body-->
-                            <div class="md-form">
-                                <i class="fas fa-align-left prefix"></i>
-                                <input type="text" id="title" class="form-control">
-                                <label for="title">Title</label>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="md-form">
+                                        <i class="fas fa-user prefix"></i>
+                                        <input type="text" id="artist" class="form-control">
+                                        <label for="artist">Artist</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="md-form">
+                                        <i class="fas fa-compact-disc prefix"></i>
+                                        <input type="text" id="album" class="form-control">
+                                        <label for="album">Album</label>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="md-form">
-                                <i class="fas fa-compact-disc prefix"></i>
-                                <input type="text" id="album" class="form-control">
-                                <label for="album">Album</label>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="md-form">
+                                        <i class="fas fa-link prefix"></i>
+                                        <input type="text" id="url" class="form-control">
+                                        <label for="url">Link</label>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="md-form">
-                                <i class="fas fa-user prefix"></i>
-                                <input type="text" id="artist" class="form-control">
-                                <label for="artist">Artist</label>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="md-form">
+                                        <i class="fa fa-lock prefix"></i>
+                                        <input type="password" id="password" class="form-control validate">
+                                        <label for="password">Password</label>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="md-form">
-                                <i class="fas fa-link prefix"></i>
-                                <input type="text" id="url" class="form-control">
-                                <label for="url">Link</label>
-                            </div>
-                            <!--Grid row-->
                             <div class="row d-flex align-items-center mb-4">
                                 <!--Grid column-->
                                 <div class="col-md-1 col-md-5 d-flex align-items-start">
@@ -80,13 +98,9 @@
                                         <button id="submit" class="btn blue-gradient">Download</button>
                                     </div>
                                 </div>
-                                <!--Grid column-->
-                                <!--Grid column-->
                             </div>
-                            <!--Grid row-->
-                        </div>
                     </div>
-                    <!--/Form with header-->
+                </div>
             </section>
         </div>
 

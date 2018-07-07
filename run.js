@@ -33,19 +33,23 @@ app.use(express.static("css"));
 
 // Update inner html and refresh when buttons are clicked
 io.on("connection", function(socket) {
-  socket.on("submit", function(data) {
-    if (!validator.isURL(data.url)) {
-      socket.emit("msg", "error", "Invalid url: " + data.url);
+  socket.on("submit", function(data, password) {
+    if (password === process.env.PASSWORD) {
+      if (!validator.isURL(data.url)) {
+        socket.emit("msg", "error", "Invalid url: " + data.url);
+      } else {
+        socket.emit("msg", "info", "Download started");
+        downloader
+          .download(data)
+          .then(function(stdout) {
+            socket.emit("msg", "success", "Download complete");
+          })
+          .catch(function(err) {
+            socket.emit("msg", "error", err);
+          });
+      }
     } else {
-      socket.emit("msg", "info", "Download started");
-      downloader
-        .download(data)
-        .then(function(stdout) {
-          socket.emit("msg", "success", "Download complete");
-        })
-        .catch(function(err) {
-          socket.emit("msg", "error", err);
-        });
+      socket.emit("msg", "error", "Incorrect password");
     }
   });
 });
