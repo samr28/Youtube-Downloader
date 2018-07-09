@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ "$1" == "-h" ]; then
+  echo "Usage: `basename $0` [url] [title] [artist] [album]"
+  exit 0
+fi
+
+cd $DOWNLOAD_LOCATION
+
+# Have artist, make dir and cd in
+if [ ! -d $3 ]; then mkdir $3; fi;
+cd $3;
+
+# Have album, make dir and cd in
+if [ ! -d $4 ]; then mkdir $4; fi;
+cd $4;
+
+youtube-dl -x --audio-format mp3 -o $2'.%(ext)s' $1
+
+id3tool -t $2 -r $3 -a $4 $2'.mp3'
