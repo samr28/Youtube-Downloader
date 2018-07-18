@@ -14,14 +14,6 @@ if (process.env.DEBUG == 1) {
   debug = false;
 }
 
-/**
- * Generate new HTML and update the title
- */
-function refreshAll() {
-  io.sockets.emit("update server", generateHTML());
-  io.sockets.emit("update title", allServersOnline());
-}
-
 console.log(`[${new Date()}] Starting v${version}`);
 
 // Serve index
@@ -45,7 +37,7 @@ io.on("connection", function(socket) {
             socket.emit("msg", "success", "Download complete");
           })
           .catch(function(err) {
-            socket.emit("msg", "error", err);
+            socket.emit("msg", "error", err.toString());
           });
       }
     } else {

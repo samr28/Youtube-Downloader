@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ $# -eq 0 ]; then
+    echo "Usage: `basename $0` [url] [title] [artist] [album]"
+    exit 0
+fi
+
 if [ "$1" == "-h" ]; then
   echo "Usage: `basename $0` [url] [title] [artist] [album]"
   exit 0
@@ -7,14 +12,41 @@ fi
 
 cd $DOWNLOAD_LOCATION
 
-# Have artist, make dir and cd in
-if [ ! -d $3 ]; then mkdir $3; fi;
-cd $3;
+# Check if artist was passed in
+if [ ! -z "$3" ]; then
+  # Have artist, make dir and cd in
+  if [ ! -d $3 ]; then
+    mkdir $3
+  fi
+  cd $3
+  # Check if album was passed in
+  if [ ! -z "$4" ]; then
+    # Have album, make dir and cd in
+    if [ ! -d $4 ]; then
+      mkdir $4
+    fi
+    cd $4
+  fi
+fi
 
-# Have album, make dir and cd in
-if [ ! -d $4 ]; then mkdir $4; fi;
-cd $4;
+if [ -f "$2.mp3" ]; then
+  exit 'File already exists'
+fi
 
-youtube-dl -x --audio-format mp3 -o $2'.%(ext)s' $1
+if [ ! $DEBUG ]; then
+    $ytdldebug = "-q"
+fi
 
-id3tool -t $2 -r $3 -a $4 $2'.mp3'
+# Add -q for quiet mode
+youtube-dl -x --audio-format mp3 -o "$2.%(ext)s" "$1"
+
+# Set metadata
+id3tool --set-title="$2" "$2.mp3"
+if [ ! -z "$3" ]
+  then
+    id3tool --set-artist "$3" "$2.mp3"
+fi
+if [ ! -z "$4" ]
+  then
+    id3tool --set-album "$4" "$2.mp3"
+fi
