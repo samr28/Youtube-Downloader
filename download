@@ -15,17 +15,17 @@ cd $DOWNLOAD_LOCATION
 # Check if artist was passed in
 if [ ! -z "$3" ]; then
   # Have artist, make dir and cd in
-  if [ ! -d $3 ]; then
-    mkdir $3
+  if [ ! -d "$3" ]; then
+    mkdir "$3"
   fi
-  cd $3
+  cd "$3"
   # Check if album was passed in
   if [ ! -z "$4" ]; then
     # Have album, make dir and cd in
-    if [ ! -d $4 ]; then
-      mkdir $4
+    if [ ! -d "$4" ]; then
+      mkdir "$4"
     fi
-    cd $4
+    cd "$4"
   fi
 fi
 
@@ -34,7 +34,7 @@ if [ -f "$2.mp3" ]; then
 fi
 
 if [ ! $DEBUG ]; then
-    $ytdldebug = "-q"
+    $ytdldebug="-q"
 fi
 
 # Add -q for quiet mode
