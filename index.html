@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-  <title>Youtube Downloader</title>
+  <title>Music Downloader</title>
   <!-- Bootstrap core CSS -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
   <!-- Material Design Bootstrap -->
@@ -12,7 +12,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
 <script src="/socket.io/socket.io.js"></script>
-<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-1.11.1.js"></script> -->
+<!-- JQuery -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- MDBootstrap Datatables  -->
+<script type="text/javascript" src="js/datatables.min.js"></script>
+
+<script>
+$('#title').mdb_autocomplete({
+  data: ["ttt", "rrr"]
+});
+</script>
+
 <script>
 $(function () {
   var socket = io();
@@ -24,19 +35,28 @@ $(function () {
     "hideMethod": "fadeOut",
     "timeOut": 5000
   }
-  socket.on('msg', function (type, msg, title) {
+  socket.on('msg', function(type, msg, title) {
     toastr[type](msg, title);
   });
-  socket.on('songlist', function (songlistHTML) {
+  socket.on('songlist', function(songlistHTML) {
     $("#songlist").html(songlistHTML);
     $('#dtSongList').DataTable();
     $('.dataTables_length').addClass('bs-select');
   });
-  socket.on('resetform', function () {
+  socket.on('resetform', function() {
     $('#title').val('');
     $("#album").val('');
     $("#artist").val('');
     $("#url").val('');
+  });
+  socket.on('complete', function(metadata) {
+    // $("#title").val(metadata.title);
+    // $("#album").val(metadata.album);
+    // $("#artist").val(metadata.artist);
+
+    $('#title').mdb_autocomplete({
+      data: ["ttt", "rrr"]
+    });
   });
   $('#submit').click(function() {
     var data = {};
@@ -47,6 +67,39 @@ $(function () {
     var password = $("#password").val();
     socket.emit('submit', data, password);
   });
+  $('#reset').click(function() {
+    $('#title').val('');
+    $("#album").val('');
+    $("#artist").val('');
+    $("#url").val('');
+  });
+  // $('#title').keypress(function() {
+  //   if ($("#title").val()) {
+  //     var data = {};
+  //     data.title = $("#title").val();
+  //     socket.emit('autocomplete', data);
+  //   }
+  // });
+
+  
+  // $('#title').change(function() {
+  //   if ($("#title").val() && $("#artist").val()) {
+  //     var data = {};
+  //     data.title = $("#title").val();
+  //     data.album = $("#album").val();
+  //     data.artist = $("#artist").val();
+  //     socket.emit('autocomplete', data);
+  //   }
+  // });
+  // $('#artist').change(function() {
+  //   if ($("#title").val() && $("#artist").val()) {
+  //     var data = {};
+  //     data.title = $("#title").val();
+  //     data.album = $("#album").val();
+  //     data.artist = $("#artist").val();
+  //     socket.emit('autocomplete', data);
+  //   }
+  // });
 });
 </script>
 <body>
@@ -65,7 +118,7 @@ $(function () {
                 <div class="col">
                   <div class="md-form">
                     <i class="fas fa-align-left prefix"></i>
-                    <input type="text" id="title" class="form-control">
+                    <input type="text" id="title" class="form-control mdb-autocomplete">
                     <label for="title">Title</label>
                   </div>
                 </div>
@@ -109,6 +162,7 @@ $(function () {
                 <div class="col-md-1 col-md-5 d-flex align-items-start">
                   <div class="text-center">
                     <button id="submit" class="btn blue-gradient">Download</button>
+                    <button id="reset" class="btn blue-gradient">Reset form</button>
                   </div>
                 </div>
               </div>
@@ -143,10 +197,6 @@ Loading...
 </div> -->
 <br>
 </body>
-<!-- JQuery -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<!-- MDBootstrap Datatables  -->
-<script type="text/javascript" src="js/datatables.min.js"></script>
 <!-- Bootstrap tooltips -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
 <!-- Bootstrap core JavaScript -->

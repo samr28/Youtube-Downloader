@@ -18,6 +18,7 @@
   "homepage": "https://github.com/samr28/Youtube-Downloader#readme",
   "dependencies": {
     "express": "^4.16.3",
+    "lastfmapi": "^0.1.1",
     "socket.io": "^2.1.1",
     "validator": "^10.4.0"
   }
