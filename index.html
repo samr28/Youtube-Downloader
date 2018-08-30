@@ -30,7 +30,13 @@ $(function () {
     $("#songlist").html(songlistHTML);
     $('#dtSongList').DataTable();
     $('.dataTables_length').addClass('bs-select');
-  })
+  });
+  socket.on('resetform', function () {
+    $('#title').val('');
+    $("#album").val('');
+    $("#artist").val('');
+    $("#url").val('');
+  });
   $('#submit').click(function() {
     var data = {};
     data.title = $("#title").val();
@@ -45,7 +51,7 @@ $(function () {
 <body>
   <div class="container-fluid mt-5">
     <div class="row">
-      <div class="col" id="dowload-form">
+      <div class="col" id="download-form">
         <section class="form-gradient">
           <div class="card">
             <div class="header pt-3 pb-3 blue-gradient">

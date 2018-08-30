@@ -37,6 +37,7 @@ io.on("connection", function(socket) {
           .download(data)
           .then(function(stdout) {
             socket.emit("msg", "success", "Download complete");
+            socket.emit("resetform");
             songlist.getSongs().then(function (songs) {
               socket.emit("songlist", constructTable(songs));
             })
