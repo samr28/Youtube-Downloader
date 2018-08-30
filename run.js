@@ -37,6 +37,12 @@ io.on("connection", function(socket) {
           .download(data)
           .then(function(stdout) {
             socket.emit("msg", "success", "Download complete");
+            songlist.getSongs().then(function (songs) {
+              socket.emit("songlist", constructTable(songs));
+            })
+            .catch(function(err) {
+              socket.emit("msg", "error", err);
+            });
           })
           .catch(function(err) {
             socket.emit("msg", "error", err.toString());
@@ -47,16 +53,11 @@ io.on("connection", function(socket) {
     }
   });
   songlist.getSongs().then(function (songs) {
-    let songlisthtml = "<ul>";
-    for (let i = 0; i < songs.length; i++) {
-      songlisthtml += `<li>${songs[i].artist} - ${songs[i].title}</li>`;
-    }
-    songlisthtml += "</ul>";
     socket.emit("songlist", constructTable(songs));
   })
   .catch(function(err) {
-    console.log(err);
-  })
+    socket.emit("msg", "error", err);
+  });
 });
 
 // Listen for connections on WEB_PORT
