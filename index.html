@@ -35,51 +35,86 @@ $(function () {
     toastr[type](msg, title);
   });
   socket.on('songlist', function(songlistHTML) {
+    // Add songs to list
     $("#songlist").html(songlistHTML);
-    $('#dtSongList').DataTable();
-    $('.dataTables_length').addClass('bs-select');
-  });
-  socket.on('resetform', function() {
-    $('#title').val('');
-    $("#album").val('');
-    $("#artist").val('');
-    $("#url").val('');
-  });
-  socket.on('complete', function(suggestion) {
-    if (suggestion.title) {
-      $('#title').val(suggestion.title).trigger("change");
-    }
-    if (suggestion.artist) {
-      $('#artist').val(suggestion.artist).trigger("change");
-    }
-    if (suggestion.album) {
-      $('#album').val(suggestion.album).trigger("change");
-    }
-  });
-  $('#submit').click(function() {
-    var data = {};
-    data.title = $("#title").val();
-    data.album = $("#album").val();
-    data.artist = $("#artist").val();
-    data.url = $("#url").val();
-    var password = $("#password").val();
-    socket.emit('submit', data, password);
-  });
-  $('#reset').click(function() {
-    $('#title').val('');
-    $("#album").val('');
-    $("#artist").val('');
-    $("#url").val('');
-  });
 
-  $('#title').blur(function() {
-    if ($("#autofill").is(":checked") && $("#title").val()) {
+    // Setup datatable
+    $('#dtSongList').DataTable(
+      {
+        "bLengthChange": false,
+        "oLanguage": { "sSearch": "" },
+      });
+      $('.dataTables_length').addClass('bs-select');
+
+      // Kinda sketch below. Proceed at your own risk
+      
+      var songlist_wrapper = $('#dtSongList_wrapper');
+      var songlist_wrapper_row = songlist_wrapper.find('div:first');
+
+      // Remove show # results div
+      // Removes the left col inside of the row
+      songlist_wrapper_row.find('div:first').remove();
+
+      var songlist_wrapper_row_col = songlist_wrapper_row.find('div:first');
+
+      // Make right col take up full space
+      songlist_wrapper_row_col.removeClass('col-sm-12');
+      songlist_wrapper_row_col.removeClass('col-md-6');
+      songlist_wrapper_row_col.addClass('col');
+      songlist_wrapper_row_col.addClass('dtSongList_search');
+
+      var songlist_filter_label = $('#dtSongList_filter').find('label:first');
+
+      songlist_filter_label.addClass('dtSongList_filter_label');
+
+      var songlist_filter_label_input = songlist_filter_label.find('input:first');
+
+      songlist_filter_label_input.addClass('form-control-lg');
+      songlist_filter_label_input.attr('placeholder', 'Search');
+
+      // ENd of sketchy stuff
+    });
+    socket.on('resetform', function() {
+      $('#title').val('');
+      $("#album").val('');
+      $("#artist").val('');
+      $("#url").val('');
+    });
+    socket.on('complete', function(suggestion) {
+      if (suggestion.title) {
+        $('#title').val(suggestion.title).trigger("change");
+      }
+      if (suggestion.artist) {
+        $('#artist').val(suggestion.artist).trigger("change");
+      }
+      if (suggestion.album) {
+        $('#album').val(suggestion.album).trigger("change");
+      }
+    });
+    $('#submit').click(function() {
       var data = {};
       data.title = $("#title").val();
-      socket.emit('autocomplete', data);
-    }
+      data.album = $("#album").val();
+      data.artist = $("#artist").val();
+      data.url = $("#url").val();
+      var password = $("#password").val();
+      socket.emit('submit', data, password);
+    });
+    $('#reset').click(function() {
+      $('#title').val('');
+      $("#album").val('');
+      $("#artist").val('');
+      $("#url").val('');
+    });
+
+    $('#title').blur(function() {
+      if ($("#autofill").is(":checked") && $("#title").val()) {
+        var data = {};
+        data.title = $("#title").val();
+        socket.emit('autocomplete', data);
+      }
+    });
   });
-});
 </script>
 <body>
   <div class="container-fluid">
@@ -167,7 +202,7 @@ $(function () {
                 <h3 class="white-text mb-3 pt-3 font-weight-bold">Library</h3>
               </div>
             </div>
-            <div class="card-body mx-4 mt-4">
+            <div class="card-body">
               <div id="songlist">
                 <h2 class="text-center">Loading...</h2>
                 <img src="img/load.gif" class="img-fluid mx-auto d-block">

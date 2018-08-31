@@ -112,9 +112,9 @@ function constructTable(songs) {
     for (let i = 0; i < songs.length; i++) {
       tableHTML += `
         <tr>
-          <td>${songs[i].title}</td>
-          <td>${songs[i].artist}</td>
-          <td>${songs[i].album}</td>
+          <td>${songs[i].title || ''}</td>
+          <td>${songs[i].artist || ''}</td>
+          <td>${songs[i].album || ''}</td>
         </tr>
       `;
     }
