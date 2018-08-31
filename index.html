@@ -6,7 +6,9 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
   <!-- Material Design Bootstrap -->
   <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.4/css/mdb.min.css" rel="stylesheet"> -->
-  <link href="https://mdbootstrap.com/wp-content/themes/mdbootstrap4/css/compiled-4.5.6.min.css?ver=4.5.6" rel="stylesheet">
+  <link href="https://mdbootstrap.com/wp-content/themes/mdbootstrap4/css/compiled-4.5.9.min.css?ver=4.5.6" rel="stylesheet">
+  <!-- Global styles -->
+  <link href="/css/global.css" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -17,12 +19,6 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!-- MDBootstrap Datatables  -->
 <script type="text/javascript" src="js/datatables.min.js"></script>
-
-<script>
-$('#title').mdb_autocomplete({
-  data: ["ttt", "rrr"]
-});
-</script>
 
 <script>
 $(function () {
@@ -49,14 +45,16 @@ $(function () {
     $("#artist").val('');
     $("#url").val('');
   });
-  socket.on('complete', function(metadata) {
-    // $("#title").val(metadata.title);
-    // $("#album").val(metadata.album);
-    // $("#artist").val(metadata.artist);
-
-    $('#title').mdb_autocomplete({
-      data: ["ttt", "rrr"]
-    });
+  socket.on('complete', function(suggestion) {
+    if (suggestion.title) {
+      $('#title').val(suggestion.title).trigger("change");
+    }
+    if (suggestion.artist) {
+      $('#artist').val(suggestion.artist).trigger("change");
+    }
+    if (suggestion.album) {
+      $('#album').val(suggestion.album).trigger("change");
+    }
   });
   $('#submit').click(function() {
     var data = {};
@@ -73,33 +71,14 @@ $(function () {
     $("#artist").val('');
     $("#url").val('');
   });
-  // $('#title').keypress(function() {
-  //   if ($("#title").val()) {
-  //     var data = {};
-  //     data.title = $("#title").val();
-  //     socket.emit('autocomplete', data);
-  //   }
-  // });
 
-  
-  // $('#title').change(function() {
-  //   if ($("#title").val() && $("#artist").val()) {
-  //     var data = {};
-  //     data.title = $("#title").val();
-  //     data.album = $("#album").val();
-  //     data.artist = $("#artist").val();
-  //     socket.emit('autocomplete', data);
-  //   }
-  // });
-  // $('#artist').change(function() {
-  //   if ($("#title").val() && $("#artist").val()) {
-  //     var data = {};
-  //     data.title = $("#title").val();
-  //     data.album = $("#album").val();
-  //     data.artist = $("#artist").val();
-  //     socket.emit('autocomplete', data);
-  //   }
-  // });
+  $('#title').blur(function() {
+    if ($("#autofill").is(":checked") && $("#title").val()) {
+      var data = {};
+      data.title = $("#title").val();
+      socket.emit('autocomplete', data);
+    }
+  });
 });
 </script>
 <body>
@@ -159,50 +138,53 @@ $(function () {
               </div>
               <div class="row d-flex align-items-center mb-4">
                 <!--Grid column-->
-                <div class="col-md-1 col-md-5 d-flex align-items-start">
+                <div class="col d-flex align-items-start">
                   <div class="text-center">
                     <button id="submit" class="btn blue-gradient">Download</button>
-                    <button id="reset" class="btn blue-gradient">Reset form</button>
+                    <button id="reset" class="btn blue-gradient">Reset form</button
+                    </div>
+                  </div>
+                  <div class="col d flex align-items-right">
+                    <div class="d-flex flex-row-reverse align-center">
+                      <div class="p-2">
+                        <label class="bs-switch mb-0">
+                          <input id="autofill" type="checkbox" checked>
+                          <span class="slider round"></span>
+                        </label>
+                      </div>
+                      <div class="p-2">Autofill</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-      </div>
-    <div class="col-xl mt-3">
-      <div class="card">
-        <div class="header pt-3 pb-3 blue-gradient">
-          <div class="row d-flex justify-content-center">
-            <h3 class="white-text mb-3 pt-3 font-weight-bold">Library</h3>
-          </div>
+          </section>
         </div>
-        <div class="card-body mx-4 mt-4">
-          <div id="songlist">
-            <h2 class="text-center">Loading...</h2>
-            <img src="img/load.gif" class="img-fluid mx-auto d-block">
+        <div class="col-xl mt-3">
+          <div class="card">
+            <div class="header pt-3 pb-3 blue-gradient">
+              <div class="row d-flex justify-content-center">
+                <h3 class="white-text mb-3 pt-3 font-weight-bold">Library</h3>
+              </div>
+            </div>
+            <div class="card-body mx-4 mt-4">
+              <div id="songlist">
+                <h2 class="text-center">Loading...</h2>
+                <img src="img/load.gif" class="img-fluid mx-auto d-block">
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- <div class="container">
-<div class="card">
-<div id="footer" class="card-body">
-Loading...
-</div>
-</div>
-</div> -->
-<br>
-</body>
-<!-- Bootstrap tooltips -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
-<!-- Bootstrap core JavaScript -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<!-- MDB core JavaScript -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.4/js/mdb.min.js"></script>
-<!-- Toast -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-</html>
+    <br>
+  </body>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.4/js/mdb.min.js"></script>
+  <!-- Toast -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  </html>

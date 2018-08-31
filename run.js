@@ -3,10 +3,12 @@ var express = require("express");
 var http = require("http").Server(app);
 var io = require("socket.io")(http);
 var validator = require("validator");
-var LastfmAPI = require('lastfmapi');
-var lfm = new LastfmAPI({
-	'api_key' : process.env.LAST_API_KEY,
-	'secret' : process.env.LAST_SECRET
+
+var Spotify = require('node-spotify-api');
+
+var spotify = new Spotify({
+  id: process.env.SPOTIFY_API_KEY,
+  secret: process.env.SPOTIFY_SECRET
 });
 
 var downloader = require("./downloader.js");
@@ -66,49 +68,20 @@ io.on("connection", function(socket) {
   });
   socket.on("autocomplete", function(data) {
     if (data.title) {
-      lfm.track.search({
-        'track' : data.title
-      }, function (err, track) {
+      spotify.search({
+        type: 'track',
+        query: data.title
+      }, function(err, data) {
         if (err) {
-          console.log(err);
-        } else {
-          let tracks = track.trackmatches.track;
-          let slimtracks = [];
-          for (let i = 0; i < tracks.length; i++) {
-            slimtracks[i] = {};
-            if (tracks[i].name) {
-              slimtracks[i].title = tracks[i].name;
-            }
-            if (tracks[i].artist) {
-              slimtracks[i].artist = tracks[i].artist;
-            }
-          }
-          socket.emit("complete", slimtracks);
+          return console.log(err);
         }
+        let suggestion = {};
+        suggestion.title = data.tracks.items[0].name;
+        suggestion.artist = data.tracks.items[0].artists[0].name;
+        suggestion.album = data.tracks.items[0].album.name
+        socket.emit("complete", suggestion);
       });
     }
-    // else {
-    //   lfm.track.getInfo({
-    //     'artist' : data.artist,
-    //     'track' : data.title
-    //   }, function (err, track) {
-    //     let metadata = {};
-    //     if (err) {
-    //       console.log(err);
-    //     } else {
-    //       if (track.name) {
-    //         metadata.title = track.name;
-    //       }
-    //       if (track.artist && track.artist.name) {
-    //         metadata.artist = track.artist.name;
-    //       }
-    //       if (track.album && track.album.title) {
-    //         metadata.album = track.album.title
-    //       }
-    //       socket.emit("complete", metadata);
-    //     }
-    //   });
-    // }
   });
 });
 
