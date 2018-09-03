@@ -7,3 +7,8 @@
   width: 100%;
   margin-bottom: 1rem;
 }
+
+.center {
+  margin: auto;
+  display: block;
+}

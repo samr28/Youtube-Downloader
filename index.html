@@ -21,6 +21,53 @@
 <script type="text/javascript" src="js/datatables.min.js"></script>
 
 <script>
+
+var loaderHTML = `
+<div class="preloader-wrapper small active center">
+<div class="spinner-layer spinner-blue-only">
+<div class="circle-clipper left">
+<div class="circle"></div>
+</div>
+<div class="gap-patch">
+<div class="circle"></div>
+</div>
+<div class="circle-clipper right">
+<div class="circle"></div>
+</div>
+</div>
+</div>`;
+
+function pickSuggestion(i) {
+  console.log("pickSuggestion", i);
+  var suggestion = suggestions[i];
+  if (suggestion.title) {
+    $('#title').val(suggestion.title).trigger("change");
+  }
+  if (suggestion.artist) {
+    $('#artist').val(suggestion.artist).trigger("change");
+  }
+  if (suggestion.album) {
+    $('#album').val(suggestion.album).trigger("change");
+  }
+}
+
+function autofillLoader(isLoading) {
+  if (isLoading) {
+    $("#suggestions").html(loaderHTML);
+  } else {
+    $("#suggestions").html('');
+  }
+}
+
+function resetForm() {
+  $('#title').val('');
+  $("#album").val('');
+  $("#artist").val('');
+  $("#url").val('');
+  $('#suggestions').html('');
+}
+
+var suggestions = [];
 $(function () {
   var socket = io();
   toastr.options = {
@@ -47,7 +94,7 @@ $(function () {
       $('.dataTables_length').addClass('bs-select');
 
       // Kinda sketch below. Proceed at your own risk
-      
+
       var songlist_wrapper = $('#dtSongList_wrapper');
       var songlist_wrapper_row = songlist_wrapper.find('div:first');
 
@@ -72,13 +119,32 @@ $(function () {
       songlist_filter_label_input.addClass('form-control-lg');
       songlist_filter_label_input.attr('placeholder', 'Search');
 
-      // ENd of sketchy stuff
+      // End of sketchy stuff
     });
+    socket.on('suggestions', function(suggestionsHTML, suggestionsFromBackend) {
+      suggestions = suggestionsFromBackend;
+
+      // Add songs to list
+      $("#suggestions").html(suggestionsHTML);
+
+      // Setup datatable
+      $('#dtSuggestions').DataTable({
+        "bLengthChange": false,
+        "oLanguage": { "sSearch": "" },
+        "bPaginate": false,
+        "searching": false,
+        "select": {
+          style: 'single'
+        },
+      });
+    });
+
+    socket.on('nomatch', function() {
+      autofillLoader(false);
+    });
+
     socket.on('resetform', function() {
-      $('#title').val('');
-      $("#album").val('');
-      $("#artist").val('');
-      $("#url").val('');
+      resetForm();
     });
     socket.on('complete', function(suggestion) {
       if (suggestion.title) {
@@ -101,125 +167,158 @@ $(function () {
       socket.emit('submit', data, password);
     });
     $('#reset').click(function() {
-      $('#title').val('');
-      $("#album").val('');
-      $("#artist").val('');
-      $("#url").val('');
+      resetForm();
     });
 
+    // Title autocomplete
     $('#title').blur(function() {
       if ($("#autofill").is(":checked") && $("#title").val()) {
         var data = {};
         data.title = $("#title").val();
-        socket.emit('autocomplete', data);
+        socket.emit('autocomplete-title', data);
+      }
+    });
+
+    // TODO: title and artist autocomplete
+
+    // URL autocomplete
+    // TODO: also take in title, artist, album data if filled and pass as part of data
+    $('#url').blur(function() {
+      if ($("#autofill").is(":checked") && $("#url").val() && !$("#title").val() && !$("#artist").val() && !$("#album").val()) {
+        autofillLoader(true);
+        var data = {};
+        data.url = $("#url").val();
+        socket.emit('autocomplete-url', data);
       }
     });
   });
-</script>
-<body>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-xl mt-3" id="download-form">
-        <section class="form-gradient">
-          <div class="card">
-            <div class="header pt-3 pb-3 blue-gradient">
-              <div class="row d-flex justify-content-center">
-                <h3 class="white-text mb-3 pt-3 font-weight-bold">Download</h3>
-              </div>
-            </div>
-            <div class="card-body mx-4 mt-4">
-              <div class="form-row">
-                <div class="col">
-                  <div class="md-form">
-                    <i class="fas fa-align-left prefix"></i>
-                    <input type="text" id="title" class="form-control mdb-autocomplete">
-                    <label for="title">Title</label>
-                  </div>
+  </script>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xl mt-3" id="download-form">
+          <section class="form-gradient">
+            <div class="card">
+              <div class="header pt-3 pb-3 blue-gradient">
+                <div class="row d-flex justify-content-center">
+                  <h3 class="white-text mb-3 pt-3 font-weight-bold">Download</h3>
                 </div>
               </div>
-              <div class="form-row">
-                <div class="col">
-                  <div class="md-form">
-                    <i class="fas fa-user prefix"></i>
-                    <input type="text" id="artist" class="form-control">
-                    <label for="artist">Artist</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="md-form">
-                    <i class="fas fa-compact-disc prefix"></i>
-                    <input type="text" id="album" class="form-control">
-                    <label for="album">Album</label>
-                  </div>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="col">
-                  <div class="md-form">
-                    <i class="fas fa-link prefix"></i>
-                    <input type="text" id="url" class="form-control">
-                    <label for="url">Link</label>
-                  </div>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="col">
-                  <div class="md-form">
-                    <i class="fa fa-lock prefix"></i>
-                    <input type="password" id="password" class="form-control">
-                    <label for="password">Password</label>
-                  </div>
-                </div>
-              </div>
-              <div class="row d-flex align-items-center mb-4">
-                <!--Grid column-->
-                <div class="col d-flex align-items-start">
-                  <div class="text-center">
-                    <button id="submit" class="btn blue-gradient">Download</button>
-                    <button id="reset" class="btn blue-gradient">Reset form</button
+              <div class="card-body mx-4 mt-4">
+                <div class="form-row">
+                  <div class="col">
+                    <div class="md-form">
+                      <i class="fas fa-align-left prefix"></i>
+                      <input type="text" id="title" class="form-control">
+                      <label for="title">Title</label>
                     </div>
                   </div>
-                  <div class="col d flex align-items-right">
-                    <div class="d-flex flex-row-reverse align-center">
-                      <div class="p-2">
-                        <label class="bs-switch mb-0">
-                          <input id="autofill" type="checkbox" checked>
-                          <span class="slider round"></span>
-                        </label>
+                </div>
+                <div class="form-row">
+                  <div class="col">
+                    <div class="md-form">
+                      <i class="fas fa-user prefix"></i>
+                      <input type="text" id="artist" class="form-control">
+                      <label for="artist">Artist</label>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="md-form">
+                      <i class="fas fa-compact-disc prefix"></i>
+                      <input type="text" id="album" class="form-control">
+                      <label for="album">Album</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="col">
+                    <div class="md-form">
+                      <i class="fas fa-link prefix"></i>
+                      <input type="text" id="url" class="form-control">
+                      <label for="url">Link</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="col">
+                    <div class="md-form">
+                      <i class="fa fa-lock prefix"></i>
+                      <input type="password" id="password" class="form-control">
+                      <label for="password">Password</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="row d-flex align-items-center mb-4">
+                  <!--Grid column-->
+                  <div class="col d-flex align-items-start">
+                    <div class="text-center">
+                      <button id="submit" class="btn blue-gradient">Download</button>
+                      <button id="reset" class="btn blue-gradient">Reset form</button
                       </div>
-                      <div class="p-2">Autofill</div>
+                    </div>
+                    <div class="col d flex align-items-right">
+                      <div class="d-flex flex-row-reverse align-center">
+                        <div class="p-2">
+                          <label class="bs-switch mb-0">
+                            <input id="autofill" type="checkbox" checked>
+                            <span class="slider round"></span>
+                          </label>
+                        </div>
+                        <div class="p-2">Autofill</div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
-        </div>
-        <div class="col-xl mt-3">
-          <div class="card">
-            <div class="header pt-3 pb-3 blue-gradient">
-              <div class="row d-flex justify-content-center">
-                <h3 class="white-text mb-3 pt-3 font-weight-bold">Library</h3>
+            </section>
+            <div class="card mt-3">
+              <div class="header pt-3 pb-3 blue-gradient">
+                <div class="row d-flex justify-content-center">
+                  <h3 class="white-text mb-3 pt-3 font-weight-bold">Autofill</h3>
+                </div>
+              </div>
+              <div class="card-body">
+                <div id="suggestions">
+                </div>
               </div>
             </div>
-            <div class="card-body">
-              <div id="songlist">
-                <h2 class="text-center">Loading...</h2>
-                <img src="img/load.gif" class="img-fluid mx-auto d-block">
+          </div>
+          <div class="col-xl mt-3">
+            <div class="card">
+              <div class="header pt-3 pb-3 blue-gradient">
+                <div class="row d-flex justify-content-center">
+                  <h3 class="white-text mb-3 pt-3 font-weight-bold">Library</h3>
+                </div>
+              </div>
+              <div class="card-body">
+                <div id="songlist">
+                  <div class="preloader-wrapper small active center">
+                    <div class="spinner-layer spinner-blue-only">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="gap-patch">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <br>
-  </body>
-  <!-- Bootstrap tooltips -->
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
-  <!-- Bootstrap core JavaScript -->
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
-  <!-- MDB core JavaScript -->
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.4/js/mdb.min.js"></script>
-  <!-- Toast -->
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-  </html>
+      <br>
+    </body>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.4/js/mdb.min.js"></script>
+    <!-- Toast -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    </html>
