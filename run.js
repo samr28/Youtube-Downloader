@@ -98,6 +98,7 @@ io.on("connection", function(socket) {
       .then(function(stdout) {
         // Remove junk from title
         let title = stdout.replace(/[\(\[]official audio[\)\]]|[\(\[]official video[\)\]]|[\(\[]audio[\)\]]|[\(\[]video[\)\]]|[\(\[]monstercat release[\)\]]|[\(\[]official[\)\]]/gi, "");
+        title = title.trim();
         // Search spotify for the track from the url
         spotify.search({
           type: 'album,artist,track',
@@ -108,8 +109,7 @@ io.on("connection", function(socket) {
           }
           let suggestions = [];
           if (!spotifyData || !spotifyData.tracks || !spotifyData.tracks.items || !spotifyData.tracks.items[0]) {
-            socket.emit("msg", "warning", "No match");
-            socket.emit("nomatch");
+            socket.emit("suggestions", constructSuggestionsNoMatch(title));
             return;
           }
           let tracks = spotifyData.tracks.items;
@@ -144,6 +144,39 @@ io.on("connection", function(socket) {
 http.listen(process.env.WEB_PORT, function() {
   console.log(`listening on *:${process.env.WEB_PORT}`);
 });
+
+function constructSuggestionsNoMatch(title) {
+  let suggestionHTML = `
+    <h4 class="text-center">
+      No matches for "${title}"
+    </h4>
+  `;
+
+  suggestionHTML += `
+    <h3 class="text-center">
+      Try another search with:
+    </h3>
+  `;
+
+  let words = title.split(" ");
+
+  for (let i = 0; i < words.length; i++) {
+    if (words[i] != "" && words[i] != "-") {
+      suggestionHTML += `
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="suggestionWord${i}">
+            <label id="suggestionWord${i}" class="custom-control-label" for="suggestionWord${i}">${words[i]}</label>
+        </div>
+      `;
+    }
+  }
+
+  suggestionHTML += `<button id="suggestionWordSearch" class="btn blue-gradient">Search</button>`;
+
+  console.log(words);
+
+  return suggestionHTML;
+}
 
 function constructSuggestionsTable(suggestions) {
   let tableHTML = `
