@@ -18,8 +18,8 @@
   "homepage": "https://github.com/samr28/Youtube-Downloader#readme",
   "dependencies": {
     "express": "^4.16.3",
-    "node-spotify-api": "^1.0.7",
     "socket.io": "^2.1.1",
+    "spotify-web-api-node": "^4.0.0",
     "validator": "^10.4.0"
   }
 }
