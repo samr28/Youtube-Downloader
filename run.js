@@ -97,7 +97,7 @@ io.on("connection", function(socket) {
       .getTitle(data)
       .then(function(stdout) {
         // Remove junk from title
-        let title = stdout.replace(/[\(\[]official audio[\)\]]|[\(\[]official video[\)\]]|[\(\[]audio[\)\]]|[\(\[]video[\)\]]|[\(\[]monstercat release[\)\]]|[\(\[]official[\)\]]/gi, "");
+        let title = stdout.replace(/[\(\[](?:official)?(?: )?(?:music)?(?: )?(?:video)?(?: )?(?:audio)?(?: )?(?:hq audio)?(?: )?(?:monstercat release)?[\)\]]/gi, "");
         title = title.trim();
         // Search spotify for the track from the url
         spotify.search({
