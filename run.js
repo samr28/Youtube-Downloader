@@ -17,11 +17,9 @@ var songlist = require("./songList.js");
 
 var version = require("./package.json").version;
 
-var debug;
+var debug = false;
 if (process.env.DEBUG == 1) {
   debug = true;
-} else {
-  debug = false;
 }
 
 console.log(`[${new Date()}] Starting v${version}`);
@@ -97,7 +95,8 @@ io.on("connection", function(socket) {
       .getTitle(data)
       .then(function(stdout) {
         // Remove junk from title
-        let title = stdout.replace(/[\(\[](?:official)?(?: )?(?:animated)?(?: )?(?:music)?(?: )?(?:video)?(?: )?(?:audio)?(?: )?(?:hq audio)?(?: )?(?:monstercat release)?[\)\]]/gi, "");
+        let title = stdout.replace(/[\(\[{].*[}\)\]]/gi, "");
+        // let title = stdout.replace(/[\(\[](?:official)?(?: )?(?:animated)?(?: )?(?:music)?(?: )?(?:video)?(?: )?(?:audio)?(?: )?(?:hq audio)?(?: )?(?:monstercat release)?[\)\]]/gi, "");
         title = title.trim();
         // Search spotify for the track from the url
         spotify.search({
