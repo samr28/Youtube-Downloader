@@ -5,6 +5,5 @@ sudo chmod a+rx /usr/local/bin/youtube-dl
 
 sudo apt-get install ffmpeg id3tool
 
-touch run
-sudo chmod a+x run
-sudo chmod a+x download
+cp run-template run
+sudo chmod +x run
