@@ -7,10 +7,9 @@ export PASSWORD="1234"
 
 export WEB_PORT=8080
 
-# Uncomment to turn on debug
-# export DEBUG=1
+export DEBUG=0
 
 export SPOTIFY_API_KEY=
 export SPOTIFY_SECRET=
 
-forever start -l /home/user/logs/YoutubeDownloader.log -a run.js
+forever start -a run.js

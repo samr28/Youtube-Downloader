@@ -14,15 +14,15 @@ The following steps assume that you have already installed Node
 2. `cd` to where you want the app to be installed (ex: `cd ~/user/Documents`)
 3. Clone the repo (ex: `git clone https://github.com/samr28/Youtube-Downloader.git`)
 4. cd into the directory: `cd Youtube-Downloader`
-5. Install it: `npm install`
-6. Run the install script `./install`
-   - This creates a run script, installs foreverjs, ytdl, ffmpeg, and id3tool
-7. Edit `run`
+5. Make the install script executable (`chmod +x install`) and run it: `./install`
+   - This creates a run script, installs foreverjs, ytdl, ffmpeg, id3tool, python, and runs `npm install`
+6. Edit `run`
    - Set `DOWNLOAD_LOCATION` to the folder that you want to store music in
    - Set `PASSWORD` to whatever you want
    - Set `WEB_PORT` to whatever port you want to use
    - Set `SPOTIFY_API_KEY` and `SPOTIFY_SECRET` to the credentials provided by Spotify (API Key is your client ID and secret is your client secret)
-8. Type `./run` to start the app (if you encounter any errors, open an issue)
+   - Modify the foreverjs command to use the correct log file
+7. Type `./run` to start the app (if you encounter any errors, open an issue)
 
 ### Usage
 1. Navigate to YOUR_IP:WEB_PORT (set in `run`)

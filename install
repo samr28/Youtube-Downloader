@@ -1,11 +1,13 @@
 #!/bin/bash
 
+npm install
 npm install forever -g
 
 sudo wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/local/bin/youtube-dl
 sudo chmod a+rx /usr/local/bin/youtube-dl
 
-sudo apt-get install ffmpeg id3tool
+sudo apt-get update
+sudo apt-get install ffmpeg id3tool python -y
 
 cp run-template run
 sudo chmod +x run
