@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Download location
+export DOWNLOAD_LOCATION="/home/user/Music/"
+
+export PASSWORD="1234"
+
+export WEB_PORT=8080
+
+# Uncomment to turn on debug
+# export DEBUG=1
+
+export SPOTIFY_API_KEY=
+export SPOTIFY_SECRET=
+
+forever start -l /home/user/logs/YoutubeDownloader.log -a run.js
