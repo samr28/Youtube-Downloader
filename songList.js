@@ -15,6 +15,10 @@ module.exports = {
           console.log(stderr);
           reject(stderr);
         } else {
+          if (!stdout) {
+            // No songs
+            resolve([]);
+          }
           // Convert download location to regex so that it can be removed from
           // the filepath
           let downloadLocation = process.env.DOWNLOAD_LOCATION;
