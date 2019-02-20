@@ -2,7 +2,6 @@ const { exec } = require("child_process");
 
 module.exports = {
   getSongs: function() {
-    console.log(`Listing songs`);
     let listsongsCmd = './listsongs';
     let promise = new Promise(function(resolve, reject) {
       exec(listsongsCmd, (err, stdout, stderr) => {
