@@ -80,6 +80,10 @@ io.on("connection", function(socket) {
           return console.log("Spotify API ERROR: ", err);
         }
         let suggestion = {};
+        if (!data.tracks.items[0]) {
+          socket.emit("msg", "error", "No songs found");
+          return console.log("No songs found")
+        }
         suggestion.title = data.tracks.items[0].name;
         suggestion.artist = data.tracks.items[0].artists[0].name;
         suggestion.album = data.tracks.items[0].album.name;
